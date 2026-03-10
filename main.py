@@ -1,54 +1,32 @@
-"""
-ID Scanner Check-In System
-Python 3.5 friendly
-Debian / Raspberry Pi / Geany friendly
-
-Logic:
-- Swipe card
-- Extract Name + Card ID from swipe
-- Check if Card ID exists in database.csv
-- If found:
-    - Display student info
-    - Save check-in to today's CSV if not already checked in today
-- If not found:
-    - Ask for Student ID and Phone Number
-    - Save to database.csv
-    - Save check-in to today's CSV
-"""
-
 import csv
 import os
 from datetime import datetime
 from getpass import getpass
 
-# =========================
-# SETTINGS
-# =========================
+# settings
 DATABASE_FILE = "database.csv"
 CHECKIN_FOLDER = "checkin_logs"
 DISCLAIMER = "By scanning your ID, you agree to the terms and conditions."
 
-# Create folder if it does not exist
+# create folder if it does not exist
 if not os.path.exists(CHECKIN_FOLDER):
     os.makedirs(CHECKIN_FOLDER)
 
 
-# =========================
-# FILE SETUP
-# =========================
+# creates database
 def create_database_if_needed():
     if not os.path.exists(DATABASE_FILE):
         with open(DATABASE_FILE, mode="w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             writer.writerow(["Name", "Card ID", "Student ID", "Phone Number"])
 
-
+# current time function
 def get_today_checkin_file():
     today = datetime.now().strftime("%Y-%m-%d")
     filename = "checkin_{0}.csv".format(today)
     return os.path.join(CHECKIN_FOLDER, filename)
 
-
+# creates checkin file
 def create_checkin_file_if_needed(filename):
     if not os.path.exists(filename):
         with open(filename, mode="w", newline="", encoding="utf-8") as file:
@@ -56,18 +34,11 @@ def create_checkin_file_if_needed(filename):
             writer.writerow(["Name", "Card ID", "Student ID", "Phone Number", "Timestamp"])
 
 
-# =========================
-# SWIPE PARSING
-# =========================
+# swipe parsing
 def parse_swipe(swipe):
-    """
-    Example swipe:
-    %B6029220033403492^SOUTER/JASON L            ^091212000000          000?;6029220033403492=09121200000000000000?
-    """
-
     swipe = swipe.strip()
 
-    # Must contain Track 1 separators
+    # must contain track 1 separators
     if "^" not in swipe:
         raise ValueError("Swipe data missing '^' separators")
 
@@ -76,7 +47,7 @@ def parse_swipe(swipe):
     if len(parts) < 2:
         raise ValueError("Swipe data incomplete")
 
-    # First part contains %B + card id
+    # first part contains %B + card id
     card_part = parts[0].strip()
 
     if not card_part.startswith("%B"):
@@ -84,7 +55,7 @@ def parse_swipe(swipe):
 
     card_id = card_part.replace("%B", "").strip()
 
-    # Name section
+    # name section
     name_raw = parts[1].strip()
 
     if "/" not in name_raw:
@@ -98,7 +69,7 @@ def parse_swipe(swipe):
     last = name_parts[0].strip()
     first = name_parts[1].strip()
 
-    # Clean extra spaces inside first name
+    # clean extra spaces inside first name
     first = " ".join(first.split())
     last = " ".join(last.split())
 
@@ -107,9 +78,7 @@ def parse_swipe(swipe):
     return formatted_name, card_id
 
 
-# =========================
-# VALIDATION
-# =========================
+# validating student ID and phone number is 10 digits
 def valid_student_id(student_id):
     return student_id.isdigit() and len(student_id) == 10
 
@@ -123,9 +92,7 @@ def normalize_phone_number(phone):
     return "".join(ch for ch in phone if ch.isdigit())
 
 
-# =========================
-# DATABASE FUNCTIONS
-# =========================
+# database function
 def find_student_in_database(card_id):
     if not os.path.exists(DATABASE_FILE):
         return None
@@ -145,9 +112,7 @@ def add_student_to_database(name, card_id, student_id, phone_number):
         writer.writerow([name, card_id, student_id, phone_number])
 
 
-# =========================
-# CHECK-IN FUNCTIONS
-# =========================
+# check-in functions
 def already_checked_in_today(filename, card_id):
     if not os.path.exists(filename):
         return False
@@ -169,22 +134,20 @@ def save_checkin(filename, name, card_id, student_id, phone_number):
         writer.writerow([name, card_id, student_id, phone_number, timestamp])
 
 
-# =========================
-# MAIN PROGRAM
-# =========================
+# main
 def main():
     create_database_if_needed()
 
-    while True:
+    while True: # sentinel loop
         print("")
         print(DISCLAIMER)
         print("Please swipe your card.")
         print("")
 
-        # Use input() for Debian/Geany reliability
+        # used getpass() instead of input()
         swipe = getpass("Swipe Card: ").strip()
 
-        # Hidden testing exit command
+        # hidden testing exit command 
         if swipe.lower() == "exit":
             print("Program ended.")
             break
