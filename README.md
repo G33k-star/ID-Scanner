@@ -33,4 +33,5 @@ Each day creates a new CSV file for easier organization and record keeping.
 
 ## Example CSV Output
 | Name | Card ID | Student ID | Phone Number | Timestamp |
-| John Doe | 4839201 | 12345678 | 3055551234 | 2026-03-10 14:32:11 |
+| :-------- | :---------- | :-------: | :-------: | :-------: |
+| John Doe    | 1234 4568 9123 4567 | 1234567890 | 1234567890 | 2026-03-10 14:32:11 |
