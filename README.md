@@ -87,7 +87,8 @@ smart-id-verification-system/
 │   └── yyyy-mm-dd.csv
 ├── captured_images/
 │   └── yyyy-mm-dd_14-32-11.jpg
-├── database.csv
+├── database_folder/
+│   └── database.csv
 ├── LICENSE
 └── README.md
 ```
