@@ -81,13 +81,14 @@ The program checks the current date and automatically creates a new CSV file whe
 ---
 
 **Project Structure**
+
+
 smart-id-verification-system/
-│
 ├── main.py
 ├── checkin_logs/
-│   ├── 2026-03-10.csv
+│   └── yyyy-mm-dd.csv
 ├── captured_images/
-│    ├── 2026-03-10_14-32-11.jpg
+│   └── yyyy-mm-dd_14-32-11.jpg
 ├── database.csv
 ├── LICENSE
 └── README.md
@@ -95,8 +96,7 @@ smart-id-verification-system/
 
 
 
-
-**main.py**  
+**main.py**
 Primary script responsible for handling input, camera capture, prompting users, and logging data.
 
 **checkin_logs/**  
